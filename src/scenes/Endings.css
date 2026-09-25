@@ -1,0 +1,260 @@
+.ending-scene {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 40%, var(--color-fog) 0%, var(--color-bg) 55%, var(--color-void) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0 8vw;
+  transition: background 1400ms var(--ease-cinematic);
+}
+
+/* ---------- Per-ending mood ---------- */
+
+.ending-scene--getOff {
+  background: radial-gradient(ellipse at 50% 35%, #201a10 0%, var(--color-bg) 55%, var(--color-void) 100%);
+}
+
+.ending-scene--stayOn {
+  background: radial-gradient(ellipse at 50% 45%, #10141a 0%, var(--color-bg) 60%, var(--color-void) 100%);
+}
+
+.ending-scene--breakLoop {
+  background: radial-gradient(ellipse at 50% 40%, #1c1012 0%, var(--color-bg) 55%, var(--color-void) 100%);
+}
+
+.ending-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(ellipse at 50% 50%, transparent 42%, rgba(0, 0, 0, 0.68) 100%);
+}
+
+.ending-scene--breakLoop .ending-vignette {
+  background: radial-gradient(ellipse at 50% 50%, transparent 36%, rgba(122, 21, 21, 0.22) 100%, rgba(0, 0, 0, 0.72) 100%);
+  animation: endingDangerPulse 4s ease-in-out infinite;
+}
+
+.ending-scene--stayOn .ending-vignette {
+  animation: endingStillPulse 7s ease-in-out infinite;
+}
+
+@keyframes endingDangerPulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+@keyframes endingStillPulse {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; }
+}
+
+.ending-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  z-index: 5;
+}
+
+.ending-progress-fill {
+  height: 100%;
+  background: var(--color-accent);
+  opacity: 0.55;
+  transition: width 260ms linear;
+}
+
+.ending-scene--getOff .ending-progress-fill {
+  background: var(--color-accent-warm);
+}
+
+.ending-scene--breakLoop .ending-progress-fill {
+  background: var(--color-danger-glow);
+}
+
+.ending-content {
+  position: relative;
+  z-index: 2;
+  width: min(760px, 100%);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+}
+
+.ending-line {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 2.6vw, 28px);
+  line-height: 1.7;
+  letter-spacing: 0.03em;
+  color: var(--color-text-bright);
+  animation: endingLineFade 2200ms var(--ease-cinematic) both;
+}
+
+.ending-scene--getOff .ending-line {
+  text-shadow: 0 0 18px rgba(216, 184, 116, 0.16);
+}
+
+.ending-scene--stayOn .ending-line {
+  text-shadow: 0 0 18px rgba(127, 168, 201, 0.16);
+}
+
+.ending-scene--breakLoop .ending-line {
+  text-shadow: 0 0 18px rgba(255, 75, 75, 0.14);
+}
+
+@keyframes endingLineFade {
+  0% {
+    opacity: 0;
+    filter: brightness(0.2);
+  }
+  18% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  82% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  100% {
+    opacity: 0.85;
+    filter: brightness(0.92);
+  }
+}
+
+.ending-hint {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  opacity: 0.6;
+  animation: endingHintBreathe 4s ease-in-out infinite;
+}
+
+@keyframes endingHintBreathe {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.75; }
+}
+
+.ending-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 34px;
+}
+
+.ending-title-frame {
+  position: relative;
+  padding: 22px 34px;
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.ending-title-frame::before,
+.ending-title-frame::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  height: 14px;
+  background: var(--color-line);
+  transform: translateX(-50%);
+}
+
+.ending-title-frame::before {
+  top: -14px;
+}
+
+.ending-title-frame::after {
+  bottom: -14px;
+}
+
+.ending-scene--breakLoop .ending-title-frame {
+  border-color: var(--color-danger);
+}
+
+.ending-scene--breakLoop .ending-title-frame::before,
+.ending-scene--breakLoop .ending-title-frame::after {
+  background: var(--color-danger);
+}
+
+.ending-scene--getOff .ending-title-frame {
+  border-color: var(--color-accent-warm);
+}
+
+.ending-scene--getOff .ending-title-frame::before,
+.ending-scene--getOff .ending-title-frame::after {
+  background: var(--color-accent-warm);
+}
+
+.ending-title {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 3vw, 30px);
+  letter-spacing: 0.14em;
+  color: var(--color-text-bright);
+  max-width: 640px;
+}
+
+.ending-menu-actions {
+  display: flex;
+  gap: 20px;
+}
+
+.ending-menu-button {
+  position: relative;
+  background: linear-gradient(180deg, rgba(20, 20, 26, 0.6), rgba(8, 8, 11, 0.5));
+  border: 1px solid var(--color-line);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 14px 30px;
+  transition: border-color 220ms ease, color 220ms ease, background 220ms ease, transform 150ms ease, box-shadow 220ms ease;
+}
+
+.ending-menu-button:hover,
+.ending-menu-button:focus-visible {
+  border-color: var(--color-accent);
+  color: var(--color-text-bright);
+  background: rgba(127, 168, 201, 0.1);
+  outline: none;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.ending-menu-button:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.ending-menu-button--ghost {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ending-vignette,
+  .ending-hint {
+    animation: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .ending-menu-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+}

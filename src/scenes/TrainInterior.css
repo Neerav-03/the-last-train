@@ -1,0 +1,683 @@
+.train-interior {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: #050506;
+}
+
+.carriage {
+  --carriage-length: 1;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(
+    to bottom,
+    #08080b 0%,
+    #0c0d11 38%,
+    #0a0a0d 60%,
+    #050506 100%
+  );
+  transition: filter 900ms var(--ease-cinematic, ease);
+}
+
+.carriage--extended {
+  --carriage-length: 1.18;
+  filter: contrast(1.05) saturate(0.9);
+}
+
+/* ---------------------------------------------------------------- ceiling */
+
+.carriage-ceiling {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 22%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0) 0px,
+      rgba(0, 0, 0, 0) 118px,
+      rgba(0, 0, 0, 0.35) 119px,
+      rgba(0, 0, 0, 0) 121px
+    ),
+    linear-gradient(to bottom, #191a20 0%, #101116 70%, transparent 100%);
+  border-bottom: 1px solid var(--color-line);
+  box-shadow: inset 0 -10px 22px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------------------------------------------------------------- windows */
+
+.carriage-window-strip {
+  position: absolute;
+  top: 16%;
+  left: 4%;
+  right: 4%;
+  height: 22%;
+  display: flex;
+  gap: 3%;
+  z-index: 2;
+}
+
+.carriage-window {
+  flex: 1;
+  border: 1px solid var(--color-line);
+  background: radial-gradient(ellipse at 50% 30%, #0d0e12, var(--color-void) 75%);
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.85), inset 0 0 2px rgba(180, 195, 210, 0.15);
+}
+
+.carriage-window-glass {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    100deg,
+    rgba(60, 68, 82, 0.35) 0px,
+    rgba(20, 22, 28, 0.1) 40px,
+    rgba(60, 68, 82, 0.25) 90px,
+    rgba(10, 11, 14, 0.05) 160px
+  );
+  background-size: 220% 100%;
+  animation: windowScroll 9s linear infinite;
+  opacity: 0.8;
+}
+
+/* Faint diegetic reflection sheen — a diagonal highlight sitting still on
+   the glass, as if catching the carriage's own interior lighting. */
+.carriage-window::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(200, 212, 224, 0.1) 46%,
+    rgba(200, 212, 224, 0.02) 54%,
+    transparent 68%
+  );
+  pointer-events: none;
+}
+
+@keyframes windowScroll {
+  from { background-position: 0 0; }
+  to { background-position: -220% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carriage-window-glass {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------------------- luggage */
+
+.carriage-luggage-rack {
+  position: absolute;
+  top: 12%;
+  height: 6px;
+  background: linear-gradient(to bottom, #34373f, var(--color-steel) 55%, #1c1e24);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+.carriage-luggage-rack::before {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 100%;
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-line) 0px,
+    var(--color-line) 1px,
+    transparent 1px,
+    transparent 22%
+  );
+  opacity: 0.6;
+}
+
+.carriage-luggage-rack--left {
+  left: 4%;
+  width: 40%;
+}
+
+.carriage-luggage-rack--right {
+  right: 4%;
+  width: 40%;
+}
+
+/* ------------------------------------------------------------------ seats */
+
+.carriage-seat-rows {
+  position: absolute;
+  top: 42%;
+  left: 4%;
+  right: 8%;
+  bottom: 14%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.seat-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 3%;
+  height: 22%;
+  transition: transform 700ms var(--ease-cinematic, ease);
+}
+
+.deco-seat {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  max-width: 9%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.05), transparent 55%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.25) 0px,
+      rgba(0, 0, 0, 0.25) 1px,
+      transparent 1px,
+      transparent 6px
+    ),
+    linear-gradient(to bottom, var(--color-fog), var(--color-bg-raised));
+  border: 1px solid var(--color-line);
+  border-bottom-width: 3px;
+  border-radius: 2px 2px 0 0;
+  opacity: 0.72;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 -3px 5px rgba(0, 0, 0, 0.35);
+}
+
+.deco-seat::before {
+  /* seat back rising behind the cushion, suggesting a proper bench */
+  content: '';
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 100%;
+  height: 65%;
+  background: linear-gradient(to bottom, var(--color-fog), var(--color-steel) 90%);
+  border: 1px solid var(--color-line);
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  opacity: 0.85;
+}
+
+.carriage-aisle-gap {
+  flex: 2.4;
+}
+
+.carriage-floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 12%;
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent 35%),
+    radial-gradient(ellipse 60% 100% at 50% 0%, rgba(255, 255, 255, 0.035), transparent 70%),
+    repeating-linear-gradient(
+      90deg,
+      #0c0d10 0px,
+      #0c0d10 calc(56px * var(--carriage-length)),
+      #131419 calc(56px * var(--carriage-length)),
+      #131419 calc(58px * var(--carriage-length))
+    );
+  border-top: 1px solid var(--color-line);
+  box-shadow: inset 0 6px 12px rgba(0, 0, 0, 0.55);
+}
+
+/* ------------------------------------------------------------- route map */
+
+.route-map {
+  position: absolute;
+  top: 4%;
+  right: 4%;
+  width: 148px;
+  padding: 8px 10px;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.015) 0px,
+      rgba(255, 255, 255, 0.015) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    linear-gradient(160deg, rgba(18, 19, 23, 0.85), rgba(6, 6, 9, 0.78));
+  border: 1px solid var(--color-line);
+  border-radius: 1px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  z-index: 6;
+}
+
+.route-map::before,
+.route-map::after {
+  /* small rivets, top corners — reads as a bolted transit placard */
+  content: '';
+  position: absolute;
+  top: 4px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--color-line);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.8), 0 0.5px 0 rgba(255, 255, 255, 0.08);
+}
+
+.route-map::before {
+  left: 4px;
+}
+
+.route-map::after {
+  right: 4px;
+}
+
+.route-map-label {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--color-text-dim);
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(58, 61, 69, 0.6);
+}
+
+.route-map-track {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.route-map-dot {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-line);
+  border: 1px solid var(--color-text-dim);
+  flex-shrink: 0;
+  transition: background 400ms, border-color 400ms, box-shadow 400ms, transform 400ms;
+}
+
+.route-map-dot--visited {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 5px rgba(127, 168, 201, 0.6);
+}
+
+.route-map-dot--visited::after {
+  /* faint connecting tick to the next stop, like a printed transit line */
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  width: 4px;
+  height: 1px;
+  background: rgba(127, 168, 201, 0.5);
+  transform: translateY(-50%);
+}
+
+.route-map-dot--off {
+  transform: translateY(3px);
+  border-color: var(--color-danger-glow);
+  box-shadow: 0 0 4px rgba(255, 75, 75, 0.45);
+  opacity: 0.85;
+}
+
+/* ------------------------------------------------------------------ void */
+
+.carriage-void-stretch {
+  position: absolute;
+  left: 82%;
+  right: 3%;
+  top: 22%;
+  bottom: 12%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      transparent 2px,
+      transparent 14px
+    ),
+    linear-gradient(to right, transparent, rgba(0, 0, 0, 0.55) 55%, rgba(0, 0, 0, 0.82));
+  z-index: 1;
+  pointer-events: none;
+  animation: voidBreathe 7s ease-in-out infinite;
+}
+
+@keyframes voidBreathe {
+  0%, 100% { opacity: 0.9; filter: blur(0px); }
+  50% { opacity: 1; filter: blur(0.4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carriage-void-stretch {
+    animation: none;
+  }
+}
+
+/* ----------------------------------------------------------- overhead lights */
+
+.light-fixture {
+  position: absolute;
+  transform: translate(-50%, -140%);
+  width: 34px;
+  height: 6px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, #e8e2c8, #8d8360);
+  box-shadow: 0 0 6px rgba(232, 226, 200, 0.5), 0 1px 2px rgba(0, 0, 0, 0.6);
+  z-index: 3;
+  pointer-events: none;
+  transition: opacity 400ms, background 400ms, box-shadow 400ms;
+}
+
+.light-fixture--dead {
+  background: linear-gradient(to bottom, #3a3d45, #202228);
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.light-pool {
+  position: absolute;
+  top: 30%;
+  bottom: 10%;
+  width: 26%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse 60% 100% at 50% 0%,
+    rgba(188, 211, 232, 0.16),
+    rgba(188, 211, 232, 0.04) 55%,
+    transparent 80%
+  );
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transition: opacity 500ms ease, background 500ms ease;
+}
+
+.light-pool--warm {
+  background: radial-gradient(
+    ellipse 60% 100% at 50% 0%,
+    rgba(216, 184, 116, 0.16),
+    rgba(216, 184, 116, 0.04) 55%,
+    transparent 80%
+  );
+}
+
+.light-pool--dead {
+  background: radial-gradient(ellipse 60% 100% at 50% 0%, rgba(0, 0, 0, 0.4), transparent 75%);
+  mix-blend-mode: normal;
+  opacity: 0.8;
+}
+
+/* ------------------------------------------------------------- passenger */
+
+.passenger-slot {
+  position: absolute;
+  transform: translate(-50%, -78%) scale(1);
+  width: 44px;
+  height: 64px;
+  z-index: 8;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 240ms var(--ease-cinematic, ease);
+}
+
+.passenger-slot:hover {
+  transform: translate(-50%, -78%) scale(1.045);
+}
+
+.passenger-slot:active {
+  transform: translate(-50%, -78%) scale(0.985);
+}
+
+.passenger-figure {
+  width: 40px;
+  height: 60px;
+  fill: #1a1c22;
+  stroke: var(--color-line);
+  stroke-width: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+  transition: filter 220ms;
+}
+
+.passenger-slot:hover .passenger-figure {
+  filter: drop-shadow(0 0 10px rgba(127, 168, 201, 0.4)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+/* -- posture variants ----------------------------------------------------
+   Same base head+body path, reshaped per passenger via transform so the
+   five silhouettes read as distinct bodies rather than one repeated blob. */
+
+.passenger-figure g {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.posture-hunched {
+  transform: rotate(-8deg) translate(-1.5px, 2.5px) scale(0.98);
+}
+
+.posture-rigid {
+  transform: scaleY(1.035) scaleX(0.97);
+}
+
+.posture-holding {
+  transform: translateY(1px) scaleX(1.03);
+}
+
+.posture-slouch {
+  transform: rotate(5deg) skewX(-4deg) translate(1px, 1px);
+}
+
+.posture-still {
+  transform: scaleY(1.06) scaleX(0.9);
+}
+
+.passenger-detail {
+  fill: none;
+  stroke: var(--color-text-dim);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  opacity: 0.75;
+}
+
+.child-figure {
+  position: absolute;
+  width: 20px;
+  height: 24px;
+  left: 28px;
+  top: 30px;
+  fill: #17191f;
+  stroke: var(--color-line);
+  stroke-width: 1;
+}
+
+.passenger-label {
+  margin-top: 2px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--color-text-dim);
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  transition: color 220ms;
+}
+
+.passenger-slot:hover .passenger-label {
+  color: var(--color-text);
+}
+
+/* --------------------------------------------------------------- empty */
+
+.empty-seat {
+  position: absolute;
+  transform: translate(-50%, -78%);
+  width: 44px;
+  height: 64px;
+  z-index: 4;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.empty-seat-cushion {
+  position: relative;
+  width: 34px;
+  height: 20px;
+  background: linear-gradient(to bottom, var(--color-fog), var(--color-bg-raised));
+  border: 1px solid var(--color-line);
+  opacity: 0.55;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.empty-seat--disturbed .empty-seat-cushion {
+  opacity: 0.8;
+  /* a faint impression, as if something sat here recently */
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.55), inset 0 0 0 6px rgba(0, 0, 0, 0.12);
+}
+
+.empty-seat-trace {
+  position: absolute;
+  bottom: 16px;
+  width: 26px;
+  height: 26px;
+  border: 1px dashed var(--color-text-dim);
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: traceFade 5s ease-in-out infinite;
+}
+
+.empty-seat-trace::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 1px solid var(--color-text-dim);
+  border-radius: 50%;
+  opacity: 0;
+  animation: traceRipple 5s ease-in-out infinite;
+}
+
+@keyframes traceFade {
+  0%, 100% { opacity: 0.18; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes traceRipple {
+  0%, 70%, 100% { opacity: 0; transform: scale(1); }
+  85% { opacity: 0.22; transform: scale(1.25); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .empty-seat-trace,
+  .empty-seat-trace::after {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------- door */
+
+.carriage-door {
+  position: absolute;
+  transform: translate(-50%, -50%) scale(1);
+  width: 46px;
+  height: 34%;
+  z-index: 7;
+  cursor: pointer;
+  border: 1px solid var(--color-line);
+  background: linear-gradient(to bottom, var(--color-bg-raised), var(--color-void));
+  box-shadow: 0 0 0 rgba(127, 168, 201, 0);
+  transition: transform 220ms var(--ease-cinematic, ease), box-shadow 220ms, border-color 220ms;
+}
+
+.carriage-door:not(.carriage-door--sealed):hover {
+  transform: translate(-50%, -50%) scale(1.035);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 16px rgba(127, 168, 201, 0.35);
+}
+
+.carriage-door--sealed {
+  cursor: default;
+  opacity: 0.55;
+  filter: grayscale(0.4);
+}
+
+.carriage-door-frame {
+  position: absolute;
+  inset: 2px;
+  border: 1px solid var(--color-steel);
+}
+
+.carriage-door-window {
+  position: absolute;
+  top: 14%;
+  left: 18%;
+  right: 18%;
+  height: 26%;
+  background: radial-gradient(circle at 50% 30%, rgba(127, 168, 201, 0.18), transparent 70%);
+  border: 1px solid var(--color-line);
+  transition: background 220ms;
+}
+
+.carriage-door:not(.carriage-door--sealed):hover .carriage-door-window {
+  background: radial-gradient(circle at 50% 30%, rgba(127, 168, 201, 0.32), transparent 70%);
+}
+
+/* ------------------------------------------------------------- dialogue */
+
+.dialogue-mount {
+  animation: dialogueMountIn 320ms var(--ease-cinematic, ease) both;
+}
+
+@keyframes dialogueMountIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialogue-mount {
+    animation: none;
+  }
+}
+
+/* -------------------------------------------------------------- mobile */
+
+@media (max-width: 640px) {
+  .route-map {
+    width: 118px;
+    padding: 6px 8px;
+  }
+
+  .passenger-slot,
+  .empty-seat {
+    width: 34px;
+    height: 50px;
+  }
+
+  .passenger-figure {
+    width: 30px;
+    height: 46px;
+  }
+
+  .light-fixture {
+    width: 22px;
+  }
+
+  .light-pool {
+    width: 34%;
+  }
+}

@@ -1,0 +1,111 @@
+.fog-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 3;
+}
+
+.fog-overlay__layer {
+  position: absolute;
+  top: -10%;
+  width: 180%;
+  height: 120%;
+  background-repeat: no-repeat;
+  filter: blur(8px);
+  will-change: transform;
+}
+
+.fog-overlay__layer--1 {
+  left: -40%;
+  background:
+    radial-gradient(ellipse 40% 60% at 20% 50%, var(--color-fog) 0%, transparent 70%),
+    radial-gradient(ellipse 35% 50% at 60% 40%, var(--color-fog) 0%, transparent 70%);
+  opacity: 0.5;
+  animation: fogDrift1 70s linear infinite;
+}
+
+.fog-overlay__layer--2 {
+  left: -60%;
+  top: 10%;
+  background:
+    radial-gradient(ellipse 45% 55% at 30% 60%, var(--color-steel) 0%, transparent 70%),
+    radial-gradient(ellipse 30% 40% at 75% 50%, var(--color-fog) 0%, transparent 70%);
+  opacity: 0.4;
+  animation: fogDrift2 110s linear infinite;
+}
+
+.fog-overlay__layer--3 {
+  left: -20%;
+  top: -5%;
+  background: radial-gradient(ellipse 50% 60% at 50% 50%, var(--color-fog) 0%, transparent 75%);
+  opacity: 0.3;
+  animation: fogDrift3 150s linear infinite reverse;
+}
+
+.fog-overlay__layer--4 {
+  left: -30%;
+  top: 30%;
+  width: 200%;
+  height: 90%;
+  background:
+    radial-gradient(ellipse 55% 65% at 40% 50%, var(--color-steel) 0%, transparent 72%),
+    radial-gradient(ellipse 25% 35% at 80% 40%, var(--color-fog) 0%, transparent 70%);
+  opacity: 0.22;
+  filter: blur(14px);
+  mix-blend-mode: screen;
+  animation: fogDrift4 190s linear infinite;
+}
+
+.fog-overlay__ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 45%;
+  background: linear-gradient(to top, var(--color-fog) 0%, transparent 100%);
+  opacity: 0.35;
+  filter: blur(6px);
+}
+
+@keyframes fogDrift1 {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-15%);
+  }
+}
+
+@keyframes fogDrift2 {
+  from {
+    transform: translateX(-5%);
+  }
+  to {
+    transform: translateX(10%);
+  }
+}
+
+@keyframes fogDrift3 {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-8%);
+  }
+}
+
+@keyframes fogDrift4 {
+  from {
+    transform: translateX(-6%) translateY(0);
+  }
+  to {
+    transform: translateX(6%) translateY(-3%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fog-overlay__layer {
+    animation: none;
+  }
+}

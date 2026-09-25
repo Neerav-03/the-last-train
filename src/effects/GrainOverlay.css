@@ -1,0 +1,58 @@
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.grain-overlay__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+}
+
+.grain-overlay__scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.12) 0px,
+    rgba(0, 0, 0, 0.12) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+}
+
+.grain-overlay__vignette {
+  position: absolute;
+  inset: -5%;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.55) 100%);
+  animation: grainVignetteBreathe 14s ease-in-out infinite;
+}
+
+@keyframes grainVignetteBreathe {
+  0%,
+  100% {
+    background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.55) 100%);
+  }
+  50% {
+    background: radial-gradient(ellipse at center, transparent 42%, rgba(0, 0, 0, 0.6) 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain-overlay__canvas {
+    opacity: 0.4;
+  }
+
+  .grain-overlay__vignette {
+    animation: none;
+  }
+}

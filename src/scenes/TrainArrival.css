@@ -1,0 +1,289 @@
+.train-arrival-scene {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: var(--color-void);
+  cursor: pointer;
+}
+
+.arrival-shake-wrap {
+  position: absolute;
+  inset: -4%;
+  overflow: hidden;
+}
+
+.arrival-shake {
+  animation: arrivalShake 220ms infinite;
+}
+
+.arrival-shake-strong {
+  animation: arrivalShakeStrong 140ms infinite;
+}
+
+@keyframes arrivalShake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-1px, 1px); }
+  50% { transform: translate(1px, -1px); }
+  75% { transform: translate(-1px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes arrivalShakeStrong {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3px, 2px); }
+  40% { transform: translate(3px, -2px); }
+  60% { transform: translate(-2px, -3px); }
+  80% { transform: translate(2px, 3px); }
+  100% { transform: translate(0, 0); }
+}
+
+.arrival-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, #050508 0%, #0a0c12 50%, var(--color-fog) 82%, var(--color-steel) 100%);
+}
+
+.arrival-platform-floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24%;
+  background: linear-gradient(to bottom, var(--color-steel), var(--color-void));
+  border-top: 2px solid var(--color-line);
+  z-index: 3;
+}
+
+.arrival-wind-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    100deg,
+    transparent 0px,
+    transparent 60px,
+    rgba(200, 210, 220, 0.05) 61px,
+    transparent 62px
+  );
+  background-size: 200% 100%;
+  opacity: 0.5;
+}
+
+.arrival-wind-lines.is-active {
+  animation: arrivalWindStreak 1.1s linear infinite;
+  opacity: 0.75;
+}
+
+@keyframes arrivalWindStreak {
+  from { background-position: 0 0; }
+  to { background-position: -240px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrival-wind-lines.is-active {
+    animation: none;
+  }
+}
+
+/* Parallax rail lines converging toward the vanishing point */
+
+.arrival-rails {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24%;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.arrival-rails line {
+  stroke-dasharray: 4 3;
+  animation: arrivalRailDash 900ms linear infinite;
+}
+
+@keyframes arrivalRailDash {
+  to { stroke-dashoffset: -14; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrival-rails line {
+    animation: none;
+  }
+}
+
+/* Headlight bloom, approaching from the right/distance */
+
+.arrival-headlight {
+  position: absolute;
+  top: 46%;
+  right: 46%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 250, 230, 0.95) 0%, rgba(255, 244, 214, 0.55) 25%, rgba(216, 184, 116, 0.35) 45%, transparent 72%);
+  z-index: 5;
+  transition: width 3.8s var(--ease-cinematic), height 3.8s var(--ease-cinematic), right 3.8s var(--ease-cinematic), opacity 0.6s ease;
+  opacity: 0.7;
+}
+
+.arrival-headlight::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216, 184, 116, 0.22) 0%, transparent 65%);
+  z-index: -1;
+}
+
+.arrival-headlight::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 500%;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 244, 214, 0.35), transparent 70%);
+  transform: translate(-100%, -50%);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.arrival-headlight-distant {
+  width: 10px;
+  height: 10px;
+  right: 44%;
+  opacity: 0.6;
+}
+
+.arrival-headlight-approaching {
+  width: 60px;
+  height: 60px;
+  right: 30%;
+  opacity: 0.9;
+}
+
+.arrival-headlight-entering {
+  width: 160px;
+  height: 160px;
+  right: 8%;
+  opacity: 0.7;
+}
+
+.arrival-headlight-stopped,
+.arrival-headlight-boardable {
+  width: 90px;
+  height: 90px;
+  right: 4%;
+  opacity: 0.5;
+}
+
+/* Train silhouette sliding in from the right */
+
+.arrival-train {
+  position: absolute;
+  top: 30%;
+  bottom: 24%;
+  width: 85%;
+  right: 0;
+  z-index: 6;
+  transform: translateX(115%);
+  transition: transform 1.6s var(--ease-cinematic);
+}
+
+.arrival-train-distant,
+.arrival-train-approaching {
+  transform: translateX(115%);
+}
+
+.arrival-train-entering {
+  transform: translateX(6%);
+}
+
+.arrival-train-stopped,
+.arrival-train-boardable {
+  transform: translateX(0%);
+}
+
+.arrival-train-body {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 -14px 40px rgba(0, 0, 0, 0.7));
+}
+
+.arrival-window {
+  fill: url(#arrivalWindowGrad);
+  opacity: 0.85;
+}
+
+.arrival-window-lit {
+  fill: rgba(216, 184, 116, 0.28);
+  opacity: 1;
+  animation: arrivalWindowFlicker 6s ease-in-out infinite;
+}
+
+@keyframes arrivalWindowFlicker {
+  0%, 88%, 100% { opacity: 1; }
+  90% { opacity: 0.5; }
+  92% { opacity: 0.9; }
+  94% { opacity: 0.3; }
+  96% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrival-window-lit {
+    animation: none;
+    opacity: 0.85;
+  }
+}
+
+.arrival-train-door {
+  position: absolute;
+  top: 20%;
+  bottom: 0;
+  left: 12%;
+  width: 60px;
+  background: var(--color-void);
+  opacity: 0;
+  transition: opacity 1.2s ease, width 1.2s ease;
+}
+
+.arrival-train-door-boardable {
+  opacity: 1;
+  width: 90px;
+  background: linear-gradient(to bottom, rgba(216, 184, 116, 0.25), rgba(216, 184, 116, 0.05) 60%, transparent);
+  box-shadow: inset 0 0 30px rgba(216, 184, 116, 0.2);
+}
+
+.arrival-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 45%, transparent 40%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+.arrival-board-hint {
+  position: absolute;
+  bottom: 12%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 20;
+  font-family: var(--font-display);
+  font-size: clamp(13px, 1.6vw, 18px);
+  letter-spacing: 0.3em;
+  color: var(--color-text-bright);
+  text-shadow: 0 0 12px rgba(238, 240, 244, 0.4);
+  animation: boardHintPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes boardHintPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}

@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap');
+
+:root {
+  --color-void: #060608;
+  --color-bg: #0a0a0e;
+  --color-bg-raised: #111116;
+  --color-fog: #1c1e24;
+  --color-steel: #2a2d35;
+  --color-line: #3a3d45;
+  --color-text: #c9cdd6;
+  --color-text-dim: #6f7480;
+  --color-text-bright: #eef0f4;
+  --color-accent: #7fa8c9;
+  --color-accent-warm: #d8b874;
+  --color-danger: #b23a3a;
+  --color-danger-glow: #ff4b4b;
+  --color-emergency: #7a1515;
+  --font-display: 'Special Elite', 'Courier Prime', monospace;
+  --font-body: 'Courier Prime', 'Special Elite', monospace;
+  --ease-cinematic: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-void);
+  color: var(--color-text);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  min-width: 320px;
+  min-height: 100vh;
+  position: relative;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-void);
+}
+
+/* Scrollbars, when a menu needs to scroll */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+.screen-fade-enter {
+  animation: screenFadeIn 900ms var(--ease-cinematic) both;
+}
+
+@keyframes screenFadeIn {
+  from {
+    opacity: 0;
+    filter: brightness(0.3);
+  }
+  to {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+.flicker-text {
+  animation: textFlicker 6s infinite;
+}
+
+@keyframes textFlicker {
+  0%, 92%, 100% { opacity: 1; }
+  93% { opacity: 0.4; }
+  94% { opacity: 1; }
+  95% { opacity: 0.2; }
+  96% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flicker-text {
+    animation: none;
+  }
+}

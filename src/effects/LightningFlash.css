@@ -1,0 +1,75 @@
+.lightning-flash {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  pointer-events: none;
+  z-index: 90;
+  animation-name: lightningFlash;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+/* Double-strike flicker: a bright leader stroke, a brief dip, then a second
+   slightly dimmer return stroke before fading — closer to real lightning. */
+@keyframes lightningFlash {
+  0% {
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 0.55;
+  }
+  22% {
+    opacity: 0.15;
+  }
+  30% {
+    opacity: 0.85;
+  }
+  42% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.lightning-flash--safe {
+  animation-name: lightningFlashSafe;
+}
+
+@keyframes lightningFlashSafe {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.lightning-flash-afterglow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 89;
+  background: radial-gradient(ellipse at 50% 20%, rgba(150, 180, 210, 0.35) 0%, transparent 70%);
+  animation-name: lightningAfterglow;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes lightningAfterglow {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
