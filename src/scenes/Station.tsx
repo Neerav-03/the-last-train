@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useGameStore } from '../engine/store';
 import { STATIONS } from '../data/stations';
 import {
@@ -15,6 +15,7 @@ import LightningFlash from '../effects/LightningFlash';
 import RedEmergencyOverlay from '../effects/RedEmergencyOverlay';
 import InteractionPrompt from '../components/InteractionPrompt';
 import DialogueBox from '../components/DialogueBox';
+import { pick, rngFor } from '../engine/rng';
 import type { DialogueChoice, DialogueLine, InspectTextEntry, StationDef, StationObjectDef } from '../engine/types';
 import './Station.css';
 
@@ -30,12 +31,72 @@ const REBOARD_FALLBACK_MS = 24000;
 const ANNOUNCEMENT_DELAY_MS = 8000;
 const SECTOR0_FOOTSTEP_DELAY_MS = 13000;
 
-/** Resolve a StationObjectDef.inspectText entry to a plain display string.
- *  (Variant-pool arrays are reserved for a later flavor-text pass — see
- *  InspectTextEntry in engine/types.ts; not used by any data in this file
- *  today, but the type allows string[] so this stays defensive.) */
-function resolveInspectLine(entry: InspectTextEntry): string {
-  return Array.isArray(entry) ? entry[entry.length - 1] : entry;
+// ---------------------------------------------------------------------------
+// System 3: leaf flavor-text variants (STORY_REFINEMENT_GUIDE.md §4, Inv. 3/7)
+// ---------------------------------------------------------------------------
+
+/** Flag that locks this run's variant choice for one object. Flags are
+ *  boolean-only, so the variant index is encoded in the flag name. */
+function flavorLockFlag(stationKey: string, objId: string, variant: number): string {
+  return `flavor.${stationKey}.${objId}.v${variant}`;
+}
+
+interface ResolvedInspectSteps {
+  /** The full progressive-reveal sequence for this object, this run. */
+  steps: string[];
+  /** Variant-mode only: the lock flag to set if it isn't set yet (null when
+   *  the object is plain, or its variant is already locked). */
+  lockFlagToSet: string | null;
+}
+
+/**
+ * Pure: returns the progressive reveal steps for an object.
+ * - Plain mode (every entry a string): the original steps, unchanged.
+ * - Variant mode (`Array.isArray(inspectText[0])`): each entry is one full
+ *   variant; a stray string entry is treated as a one-step variant. An
+ *   existing lock flag wins; otherwise the variant is drawn from
+ *   rngFor(runSeed, 'flavor:<station>.<obj>') and the caller locks it.
+ */
+function resolveInspectSteps(
+  stationKey: string,
+  obj: StationObjectDef,
+  runSeed: number,
+  flags: Record<string, boolean>
+): ResolvedInspectSteps {
+  const entries: InspectTextEntry[] = obj.inspectText;
+  if (!Array.isArray(entries[0])) {
+    // Plain mode. A nested entry here is malformed data; show its last line
+    // rather than crash (the old placeholder behaviour).
+    const steps = entries.map((e) => (Array.isArray(e) ? e[e.length - 1] ?? '' : e));
+    return { steps, lockFlagToSet: null };
+  }
+
+  const variants = entries.map((e) => (Array.isArray(e) ? e : [e]));
+  for (let n = 0; n < variants.length; n++) {
+    if (flags[flavorLockFlag(stationKey, obj.id, n)]) {
+      return { steps: variants[n], lockFlagToSet: null };
+    }
+  }
+  const rolled = Math.floor(rngFor(runSeed, `flavor:${stationKey}.${obj.id}`)() * variants.length);
+  const n = Math.min(Math.max(rolled, 0), variants.length - 1);
+  return { steps: variants[n], lockFlagToSet: flavorLockFlag(stationKey, obj.id, n) };
+}
+
+// ---------------------------------------------------------------------------
+// System 2: station anomaly pools (STORY_REFINEMENT_GUIDE.md §4, Inv. 2/4/7)
+// ---------------------------------------------------------------------------
+
+/**
+ * Pure: at most one anomaly per station per run, deterministic from runSeed.
+ * The Last Stop never gets one (its finale stays fully authored). Entries
+ * whose id collides with a regular object are ignored defensively.
+ */
+function selectAnomaly(station: StationDef, runSeed: number): StationObjectDef | null {
+  if (station.key === 'lastStop') return null;
+  const regularIds = new Set(station.objects.map((o) => o.id));
+  const pool = (station.anomalyPool ?? []).filter((a) => !regularIds.has(a.id));
+  if (pool.length === 0) return null;
+  return pick(rngFor(runSeed, `anomaly:${station.key}`), pool);
 }
 
 // Kalyanpur vending machine, third inspect (§6.4): "Take it" awards the
@@ -236,6 +297,11 @@ function GenericStation({ station }: { station: StationDef }) {
   const announcementShownRef = useRef(false);
   const reboardChimePlayedRef = useRef(false);
 
+  // System 2: this run's anomaly for this station (or none). Deterministic
+  // from runSeed, so it is stable within a run and across reloads.
+  const runSeed = useGameStore((s) => s.runSeed);
+  const anomaly = useMemo(() => selectAnomaly(station, runSeed), [station, runSeed]);
+
   useEffect(() => {
     activeDialogueRef.current = activeDialogue;
   }, [activeDialogue]);
@@ -261,9 +327,14 @@ function GenericStation({ station }: { station: StationDef }) {
     playStinger();
     window.setTimeout(() => {
       const figureObj = station.objects.find((o) => o.id === 'figure');
-      const text = figureObj
-        ? resolveInspectLine(figureObj.inspectText[figureObj.inspectText.length - 1])
-        : "You shouldn't have gotten off.";
+      // The figure is deliberately plain (never varied), so this is always
+      // its authored final line.
+      let text = "You shouldn't have gotten off.";
+      if (figureObj) {
+        const { runSeed: seed, flags } = useGameStore.getState();
+        const { steps } = resolveInspectSteps(station.key, figureObj, seed, flags);
+        if (steps.length > 0) text = steps[steps.length - 1];
+      }
       const speaker = figureObj ? figureObj.label : '···';
       revealDialogueActiveRef.current = true;
       setActiveDialogue([{ speaker, text }]);
@@ -322,7 +393,9 @@ function GenericStation({ station }: { station: StationDef }) {
   // --- Occasional PA announcement --------------------------------------------
   useEffect(() => {
     if (station.announcements.length === 0) return;
-    const delay = ANNOUNCEMENT_DELAY_MS + Math.random() * 5000;
+    // System 4: seeded jitter — timing only, never gates progression.
+    const seed = useGameStore.getState().runSeed;
+    const delay = ANNOUNCEMENT_DELAY_MS + rngFor(seed, `timing:announcement:${station.key}`)() * 5000;
     const timer = window.setTimeout(() => {
       if (announcementShownRef.current) return;
       if (activeDialogueRef.current) return;
@@ -365,10 +438,34 @@ function GenericStation({ station }: { station: StationDef }) {
     }
   };
 
+  /** Resolve this run's steps for an object, lock its variant on first
+   *  inspect, and return the line for the given interaction count. */
+  const resolveLineForCount = (obj: StationObjectDef, count: number): string => {
+    const store = useGameStore.getState();
+    const { steps, lockFlagToSet } = resolveInspectSteps(station.key, obj, store.runSeed, store.flags);
+    if (lockFlagToSet) store.setFlag(lockFlagToSet, true);
+    if (steps.length === 0) return '';
+    const idx = Math.min(Math.max(count - 1, 0), steps.length - 1);
+    return steps[idx];
+  };
+
   const handleInspect = (obj: StationObjectDef) => {
     if (activeDialogueRef.current) return;
-    const isFollowFootsteps = station.key === 'sector0' && obj.id === 'followFootsteps';
     const id = `${station.key}.${obj.id}`;
+
+    // System 2: an anomaly is pure atmosphere. It gets progressive text via
+    // interact(), and nothing else: no awardStationClues(), no
+    // distinctInspectedRef, no reboard / Home / Empty-Platform / Sector 0
+    // threshold checks (Invariants 2 and 4), so structural timing is
+    // identical whichever anomaly rolled.
+    if (anomaly && obj.id === anomaly.id) {
+      const anomalyCount = useGameStore.getState().interact(id);
+      setActiveDialogue([{ speaker: obj.label, text: resolveLineForCount(obj, anomalyCount) }]);
+      setActiveChoices(null);
+      return;
+    }
+
+    const isFollowFootsteps = station.key === 'sector0' && obj.id === 'followFootsteps';
     const count = useGameStore.getState().interact(id);
     awardStationClues();
 
@@ -392,8 +489,7 @@ function GenericStation({ station }: { station: StationDef }) {
       distinctInspectedRef.current.add(obj.id);
     }
 
-    const idx = Math.min(count - 1, obj.inspectText.length - 1);
-    const line = resolveInspectLine(obj.inspectText[idx]);
+    const line = resolveLineForCount(obj, count);
 
     // §6.4: Kalyanpur vending machine, exactly the 3rd inspect — present a
     // choice instead of auto-advancing. vendingMachineReceipt is only ever
@@ -457,6 +553,10 @@ function GenericStation({ station }: { station: StationDef }) {
     station.key === 'sector0'
       ? station.objects.filter((obj) => obj.id !== 'followFootsteps' || footstepsRevealed)
       : station.objects;
+  // The run's anomaly (if any) renders with exactly the same hotspot markup
+  // and prompt as a regular object — no extra light, tint, flash or shake
+  // (restrained per §7; nothing for Invariant 9 to gate).
+  const hotspotObjects = anomaly ? [...visibleObjects, anomaly] : visibleObjects;
   const followFootstepsObj =
     station.key === 'sector0' ? station.objects.find((obj) => obj.id === 'followFootsteps') : undefined;
 
@@ -510,7 +610,7 @@ function GenericStation({ station }: { station: StationDef }) {
       )}
 
       <div className="station-objects">
-        {visibleObjects.map((obj) => (
+        {hotspotObjects.map((obj) => (
           <div
             key={obj.id}
             className="station-hotspot"
@@ -539,7 +639,7 @@ function GenericStation({ station }: { station: StationDef }) {
       </div>
 
       {!activeDialogue &&
-        visibleObjects.map((obj) => (
+        hotspotObjects.map((obj) => (
           <InteractionPrompt
             key={`${obj.id}-prompt`}
             label={obj.label}
@@ -633,20 +733,58 @@ const INTRO_PART_1: DialogueLine[] = [
   { speaker: '', text: 'Then, all at once, the lights go out.' },
 ];
 
-const INTRO_PART_2: DialogueLine[] = [
+const INTRO_PART_2_OPEN: DialogueLine[] = [
   { speaker: '', text: 'When the lights come back, the carriage is not the same.' },
   { speaker: '', text: 'A conductor is standing at the carriage door. You have never seen him before.' },
+];
+
+// Only plays if the player took the vending machine receipt at Kalyanpur (§6.4).
+const INTRO_PART_2_RECEIPT: DialogueLine[] = [
+  { speaker: '', text: 'His eyes drop to your pocket, to the curl of thermal paper you took at Kalyanpur.' },
+  { speaker: 'CONDUCTOR', text: 'One more stop. You paid for it already.' },
+];
+
+const INTRO_PART_2_CLOSE: DialogueLine[] = [
+  { speaker: '', text: 'He sets a clipboard and a worn ledger on the seat beside you, and waits.' },
   { speaker: 'CONDUCTOR', text: 'This is your stop.' },
 ];
 
 function LastStopStation({ station }: { station: StationDef }) {
   const [phase, setPhase] = useState<LastStopPhase>('intro1');
-  const clueCount = useGameStore((s) => s.discoveredClues.length);
-  const canBreakLoop = clueCount >= BREAK_LOOP_CLUE_THRESHOLD;
+  const discoveredClues = useGameStore((s) => s.discoveredClues);
+  const requiredClueIds = useGameStore((s) => s.requiredClueIds);
+  const tookReceipt = useGameStore((s) => !!s.flags.tookReceipt);
+
+  // System 5: this run's breakLoop gate is its own 5-clue required subset
+  // (drawn once in startNewGame() from station-level clues only, Invariant 5).
+  // Legacy saves from before requiredClueIds existed have an empty list; fall
+  // back to the original flat count threshold for those.
+  const canBreakLoop =
+    requiredClueIds.length > 0
+      ? requiredClueIds.every((id) => discoveredClues.includes(id))
+      : discoveredClues.length >= BREAK_LOOP_CLUE_THRESHOLD;
+
+  const introPart2 = useMemo(
+    () => [...INTRO_PART_2_OPEN, ...(tookReceipt ? INTRO_PART_2_RECEIPT : []), ...INTRO_PART_2_CLOSE],
+    // Resolved once on arrival; the flag cannot change during this scene.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   useEffect(() => {
     setAmbience('dread');
   }, []);
+
+  // The Last Stop's own station-level clues (passengerList, conductorsLedger)
+  // are in the requiredClueIds pool, but this scripted scene has no inspect
+  // hotspots, so awardStationClues() never ran for it. That made both clues
+  // unreachable and let a run that drew either one lock out breakLoop. The
+  // conductor now hands them over, unconditionally, before the choice appears.
+  useEffect(() => {
+    if (phase !== 'signReveal') return;
+    const store = useGameStore.getState();
+    station.clueIds.forEach((id) => store.awardClue(id));
+  }, [phase, station]);
 
   useEffect(() => {
     if (phase !== 'signReveal') return;
@@ -689,7 +827,7 @@ function LastStopStation({ station }: { station: StationDef }) {
       )}
 
       {phase === 'intro2' && (
-        <DialogueBox lines={INTRO_PART_2} onComplete={() => setPhase('signReveal')} />
+        <DialogueBox lines={introPart2} onComplete={() => setPhase('signReveal')} />
       )}
 
       {phase === 'choice' && (

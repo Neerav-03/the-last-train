@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="THE LAST TRAIN">
+  <title>THE LAST TRAIN</title>
+  <!-- Maskable: full-bleed background; all motif detail sits inside the
+       central safe zone (circle of radius 204 around the center). -->
+  <defs>
+    <radialGradient id="halo" cx="256" cy="228" r="170" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#eef0f4" stop-opacity="0.95"/>
+      <stop offset="0.18" stop-color="#c9d9e6" stop-opacity="0.55"/>
+      <stop offset="0.5" stop-color="#7fa8c9" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#7fa8c9" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fog" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c1e24" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#2a2d35" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#1c1e24" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="#060608"/>
+  <circle cx="256" cy="228" r="170" fill="url(#halo)"/>
+  <path d="M238 286 L150 424 M274 286 L362 424" stroke="#6f7480" stroke-width="12" stroke-linecap="round"/>
+  <path d="M224 332 H288 M205 368 H307 M184 402 H328" stroke="#3a3d45" stroke-width="11"/>
+  <rect y="268" width="512" height="72" fill="url(#fog)"/>
+  <circle cx="256" cy="228" r="34" fill="#ffffff"/>
+</svg>

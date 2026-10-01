@@ -1,0 +1,63 @@
+# Deploys the static build to GitHub Pages at https://<owner>.github.io/the-last-train/
+#
+# One-time setup by the repo owner:
+#   - Repo Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
+#   - GitHub Pages on a PRIVATE repository requires a paid plan (Pro, Team or
+#     Enterprise). On the Free plan the repo must be public, or deploy with
+#     Vercel/Netlify instead (see vercel.json / netlify.toml).
+#
+# VITE_BASE must match the repo name because Pages serves project sites from
+# /<repo>/. If the repo is renamed or a custom domain is added, update it
+# (use VITE_BASE=/ for a custom domain).
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deployment at a time; never cancel one that is already publishing.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_BASE: /the-last-train/
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

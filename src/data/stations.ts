@@ -39,9 +39,54 @@ export const STATIONS: StationDef[] = [
         id: 'benchPoster',
         label: 'Torn Poster',
         position: { x: 80, y: 60 },
+        // Leaf flavor variants (System 3) — one full progressive sequence per
+        // variant, chosen once per run and locked in flags. Nothing reads this.
         inspectText: [
-          'An advertisement, rain-bleached past reading, peeling at one corner.',
-          'Underneath the top layer, an older poster shows through — for a train line you’ve never heard of.',
+          [
+            'An advertisement, rain-bleached past reading, peeling at one corner.',
+            'Underneath the top layer, an older poster shows through — for a train line you’ve never heard of.',
+          ],
+          [
+            'An advertisement, rain-bleached past reading, peeling at one corner.',
+            'Underneath, an older poster: a timetable for a line that closed before you were born. The ink is still glossy.',
+          ],
+          [
+            'An advertisement, rain-bleached past reading, peeling at one corner.',
+            'Underneath are three older posters, each one for this same train, each a little more faded. The newest is on the bottom.',
+          ],
+        ],
+      },
+    ],
+    // Station anomaly pool (System 2) — mild band: deniable, almost-normal.
+    // At most one is chosen per run. Never carries clueIds (Invariant 4).
+    anomalyPool: [
+      {
+        id: 'anomaly_umbrella',
+        label: 'Folded Umbrella',
+        position: { x: 36, y: 74 },
+        inspectText: [
+          'A black umbrella leans against a pillar, furled tight.',
+          'It has been raining all night. There is not a drop on it.',
+          'The handle is still warm. Someone set it down a moment ago, and meant to come back.',
+        ],
+      },
+      {
+        id: 'anomaly_puddle',
+        label: 'Puddle',
+        position: { x: 88, y: 78 },
+        inspectText: [
+          'Rainwater pooled in a dip in the concrete, rippling under the drip from the canopy.',
+          'You lean over it. Your reflection takes a moment to lean over too.',
+          'The ripples, probably. You don’t lean over it again.',
+        ],
+      },
+      {
+        id: 'anomaly_teaCup',
+        label: 'Paper Cup',
+        position: { x: 44, y: 50 },
+        inspectText: [
+          'A paper cup of tea balanced on the railing, still steaming in the cold.',
+          'There is no one else on the platform. There is no tea stall either.',
         ],
       },
     ],
@@ -65,8 +110,18 @@ export const STATIONS: StationDef[] = [
         label: 'Row of Benches',
         position: { x: 30, y: 65 },
         inspectText: [
-          'A long steel bench, empty, still faintly warm in one spot as if someone just stood up.',
-          'You sit. The warmth fades faster than it should.',
+          [
+            'A long steel bench, empty, still faintly warm in one spot as if someone just stood up.',
+            'You sit. The warmth fades faster than it should.',
+          ],
+          [
+            'A long steel bench, empty. Someone has left a folded newspaper on the end seat.',
+            'The crossword is half finished. Seven across is the word you were just trying to think of.',
+          ],
+          [
+            'A long steel bench, empty, beaded with condensation.',
+            'One seat has been wiped dry with a sleeve. The streaks are still wet at the edges.',
+          ],
         ],
       },
       {
@@ -83,8 +138,49 @@ export const STATIONS: StationDef[] = [
         label: 'Notice Board',
         position: { x: 75, y: 50 },
         inspectText: [
-          'A cork board thick with layers of old notices, none of them legible anymore.',
-          'Pinned on top, a single blank index card. Nothing written on either side.',
+          [
+            'A cork board thick with layers of old notices, none of them legible anymore.',
+            'Pinned on top, a single blank index card. Nothing written on either side.',
+          ],
+          [
+            'A cork board thick with layers of old notices, none of them legible anymore.',
+            'One pin holds nothing at all, only a clean pale square where a notice hung until very recently.',
+          ],
+          [
+            'A cork board thick with layers of old notices, none of them legible anymore.',
+            'On top, a lost-property card: ONE SCARF, GREY. ASK AT THE OFFICE. There is no office.',
+          ],
+        ],
+      },
+    ],
+    // Station anomaly pool (System 2) — mild band. Never carries clueIds.
+    anomalyPool: [
+      {
+        id: 'anomaly_footprints',
+        label: 'Wet Footprints',
+        position: { x: 88, y: 70 },
+        inspectText: [
+          'Wet shoe prints lead from the open train doors to the platform edge, and back again.',
+          'Someone got off to look at something, then got back on. You didn’t see anyone.',
+        ],
+      },
+      {
+        id: 'anomaly_tube',
+        label: 'Flickering Tube',
+        position: { x: 42, y: 28 },
+        inspectText: [
+          'One fluorescent tube stutters overhead, the way they all do eventually.',
+          'It flickers in a rhythm. Long, short, short. Long, short, short.',
+          'It steadies the moment you start counting.',
+        ],
+      },
+      {
+        id: 'anomaly_glove',
+        label: 'Lost Glove',
+        position: { x: 14, y: 50 },
+        inspectText: [
+          'A single leather glove, pushed onto a railing post so its owner might find it.',
+          'It is exactly the size of your hand. Plenty of people have hands your size.',
         ],
       },
     ],
@@ -117,8 +213,18 @@ export const STATIONS: StationDef[] = [
         label: 'Directional Sign',
         position: { x: 68, y: 42 },
         inspectText: [
-          'Another arrow, also marked EXIT, pointing the opposite direction from the first.',
-          'Both signs were bolted by the same hand. You can tell from the screws.',
+          [
+            'Another arrow, also marked EXIT, pointing the opposite direction from the first.',
+            'Both signs were bolted by the same hand. You can tell from the screws.',
+          ],
+          [
+            'Another arrow, also marked EXIT, pointing the opposite direction from the first.',
+            'Someone has scratched a second word under EXIT, then scratched it out again. The gouges are fresh.',
+          ],
+          [
+            'Another arrow, also marked EXIT, pointing the opposite direction from the first.',
+            'The paint is still wet. It comes away on your fingertip, and now the arrow points somewhere else.',
+          ],
         ],
       },
       {
@@ -145,6 +251,38 @@ export const STATIONS: StationDef[] = [
         ],
       },
     ],
+    // Station anomaly pool (System 2) — moderate band: clearly wrong.
+    // Never carries clueIds; positions stay clear of the followFootsteps
+    // hotspot and its dust marker (lower left).
+    anomalyPool: [
+      {
+        id: 'anomaly_stairwell',
+        label: 'Stairwell',
+        position: { x: 86, y: 66 },
+        inspectText: [
+          'A concrete stairwell leading up, stencilled EXIT in flaking paint.',
+          'You climb twelve steps. The landing opens back onto this platform, from the far end.',
+        ],
+      },
+      {
+        id: 'anomaly_secondBulb',
+        label: 'Caged Bulb',
+        position: { x: 84, y: 28 },
+        inspectText: [
+          'A second caged bulb, identical to the first, bolted to the rebar.',
+          'It isn’t lit. It isn’t wired to anything. It is warm to the touch.',
+        ],
+      },
+      {
+        id: 'anomaly_intercom',
+        label: 'Intercom Panel',
+        position: { x: 62, y: 76 },
+        inspectText: [
+          'A dented intercom box with a single call button.',
+          'You press it. The line opens. On the other end, someone presses a button too, and waits.',
+        ],
+      },
+    ],
     announcements: ['Sector 0. All passengers remain seated until instructed.'],
     clueIds: ['tornRailwayMap'],
   },
@@ -162,8 +300,18 @@ export const STATIONS: StationDef[] = [
         label: 'Corner Shop',
         position: { x: 22, y: 55 },
         inspectText: [
-          'A shopfront you’d recognize anywhere — same awning, same window display.',
-          'The sign above the door reads a name you’ve never once seen on it before tonight.',
+          [
+            'A shopfront you’d recognize anywhere — same awning, same window display.',
+            'The sign above the door reads a name you’ve never once seen on it before tonight.',
+          ],
+          [
+            'A shopfront you’d recognize anywhere — same awning, same window display.',
+            'The display is exactly as it was when you were small. The same sweets, the same sun-faded box. Nothing has moved in years.',
+          ],
+          [
+            'A shopfront you’d recognize anywhere — same awning, same window display.',
+            'The bell above the door rings as you look at it. The door has not opened.',
+          ],
         ],
       },
       {
@@ -183,6 +331,36 @@ export const STATIONS: StationDef[] = [
           'A departures board behind scratched plexiglass, every row blank but one.',
           'ARRIVAL — 2:17 AM',
           'DEPARTURE — NEVER',
+        ],
+      },
+    ],
+    // Station anomaly pool (System 2) — moderate band. Never carries clueIds.
+    anomalyPool: [
+      {
+        id: 'anomaly_phoneBox',
+        label: 'Phone Box',
+        position: { x: 40, y: 72 },
+        inspectText: [
+          'A red phone box, the same one that stood outside the station you grew up near.',
+          'It is ringing. You lift the receiver and hear this platform — the hum, your own breathing — a second late.',
+        ],
+      },
+      {
+        id: 'anomaly_memorialBench',
+        label: 'Memorial Bench',
+        position: { x: 88, y: 72 },
+        inspectText: [
+          'A bench with a small brass plaque: IN MEMORY OF, and then a date.',
+          'The date is tomorrow’s.',
+        ],
+      },
+      {
+        id: 'anomaly_archTile',
+        label: 'Tiled Arch',
+        position: { x: 36, y: 40 },
+        inspectText: [
+          'The tiles in the arch are the pattern you remember, green and cream.',
+          'One tile is missing, the one you chipped as a child. Here it is missing too, on the wrong side of the arch.',
         ],
       },
     ],
@@ -215,8 +393,50 @@ export const STATIONS: StationDef[] = [
         label: 'Platform Edge',
         position: { x: 40, y: 70 },
         inspectText: [
-          'The edge drops into absolute black. No tracks. No far wall. Just distance that doesn’t end.',
-          'You throw a coin over the edge. You never hear it land.',
+          [
+            'The edge drops into absolute black. No tracks. No far wall. Just distance that doesn’t end.',
+            'You throw a coin over the edge. You never hear it land.',
+          ],
+          [
+            'The edge drops into absolute black. No tracks. No far wall. Just distance that doesn’t end.',
+            'You lean out to look. Somewhere very far below, something leans up to look back.',
+          ],
+          [
+            'The edge drops into absolute black. No tracks. No far wall. Just distance that doesn’t end.',
+            'You call out. Your voice comes back a long time later, from behind you.',
+          ],
+        ],
+      },
+    ],
+    // Station anomaly pool (System 2) — severe band: hostile or personal.
+    // Never carries clueIds and never touches the train-vanish reveal (§7).
+    // Kept to the left half, clear of the reveal silhouette.
+    anomalyPool: [
+      {
+        id: 'anomaly_coat',
+        label: 'Folded Coat',
+        position: { x: 18, y: 56 },
+        inspectText: [
+          'Your coat lies folded on the platform floor. You are wearing your coat.',
+          'It is folded the way you fold it. The lining is still warm. Something has been sleeping on it.',
+        ],
+      },
+      {
+        id: 'anomaly_handprints',
+        label: 'Handprints',
+        position: { x: 26, y: 32 },
+        inspectText: [
+          'Handprints on a tiled pillar, pressed into the grime at the height of your shoulders.',
+          'They keep going up. Higher than anyone could reach. All the way into the dark.',
+        ],
+      },
+      {
+        id: 'anomaly_speaker',
+        label: 'Speaker Grille',
+        position: { x: 22, y: 82 },
+        inspectText: [
+          'A speaker grille set into the floor, silent. No PA has run here in a long time.',
+          'You kneel. Very quietly, it is saying your name. It was saying it before you got off.',
         ],
       },
     ],
@@ -256,8 +476,49 @@ export const STATIONS: StationDef[] = [
         label: 'The Door Home',
         position: { x: 78, y: 50 },
         inspectText: [
-          'A plain wooden door at the platform’s far end, warm light bleeding out from underneath.',
-          'It is unlocked. It is waiting. You have never wanted anything to be simple this badly.',
+          [
+            'A plain wooden door at the platform’s far end, warm light bleeding out from underneath.',
+            'It is unlocked. It is waiting. You have never wanted anything to be simple this badly.',
+          ],
+          [
+            'A plain wooden door at the platform’s far end, warm light bleeding out from underneath.',
+            'Someone calls your name on the other side, the way it was called for dinner. You touch the handle. The voice stops.',
+          ],
+          [
+            'A plain wooden door at the platform’s far end, warm light bleeding out from underneath.',
+            'You knock. From the other side, very softly, someone knocks back — the same rhythm, a beat late.',
+          ],
+        ],
+      },
+    ],
+    // Station anomaly pool (System 2) — severe band, personal. Never carries
+    // clueIds and never triggers the void / RedEmergencyOverlay beat (§7).
+    anomalyPool: [
+      {
+        id: 'anomaly_coatHooks',
+        label: 'Coat Hooks',
+        position: { x: 88, y: 34 },
+        inspectText: [
+          'A row of coat hooks by the door, a coat on each. You know every one of them.',
+          'The last hook is empty. Above it, in your mother’s handwriting, is your name.',
+        ],
+      },
+      {
+        id: 'anomaly_placeSetting',
+        label: 'Place Setting',
+        position: { x: 36, y: 68 },
+        inspectText: [
+          'A small table by the bench, laid for one. The food is still hot.',
+          'The chair has been pulled out for you. From the dust on the seat, it has been pulled out for a very long time.',
+        ],
+      },
+      {
+        id: 'anomaly_shoes',
+        label: 'Shoes on the Mat',
+        position: { x: 64, y: 72 },
+        inspectText: [
+          'A pair of shoes on the mat, toes to the wall, the way you always leave yours.',
+          'They are your shoes. You look down at your feet, then back at the mat. Only one of those can be right.',
         ],
       },
     ],

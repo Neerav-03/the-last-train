@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useGameStore } from '../engine/store';
+import { rngFor } from '../engine/rng';
 import { setAmbience, playAnnouncementStatic } from '../audio/AudioEngine';
 import RainOverlay from '../effects/RainOverlay';
 import FogOverlay from '../effects/FogOverlay';
@@ -120,7 +121,10 @@ export default function Platform() {
     let timer: number;
     const scheduleNext = () => {
       if (announcementCountRef.current >= 2) return;
-      const delay = 45000 + Math.random() * 25000;
+      // Seeded jitter (STORY_REFINEMENT_GUIDE.md §4 System 4) — timing only.
+      const { runSeed } = useGameStore.getState();
+      const delay =
+        45000 + rngFor(runSeed, `timing:platform.announcement:${announcementCountRef.current}`)() * 25000;
       timer = window.setTimeout(() => {
         if (!activeDialogueRef.current && !advancedRef.current) {
           announcementCountRef.current += 1;
