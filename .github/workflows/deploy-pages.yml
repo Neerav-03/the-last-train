@@ -9,10 +9,16 @@
 # VITE_BASE must match the repo name because Pages serves project sites from
 # /<repo>/. If the repo is renamed or a custom domain is added, update it
 # (use VITE_BASE=/ for a custom domain).
+#
+# Deploys only after the "CI" workflow passes on main, so a commit that fails
+# typecheck, tests or build never reaches the live site. It can also be run
+# by hand from the Actions tab.
 name: Deploy to GitHub Pages
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -28,10 +34,14 @@ concurrency:
 
 jobs:
   build:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
+        with:
+          # Build exactly the commit CI verified, not whatever main points to now.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - uses: actions/setup-node@v5
         with:
