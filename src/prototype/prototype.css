@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap');
+
+:root {
+  --p-void: #060608;
+  --p-text: #c9cdd6;
+  --p-dim: #6f7480;
+  --p-bright: #eef0f4;
+  --p-accent: #7fa8c9;
+  --p-warm: #d8b874;
+  --p-danger: #b23a3a;
+  --p-display: 'Special Elite', 'Courier Prime', monospace;
+  --p-body: 'Courier Prime', 'Special Elite', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--p-void);
+  color: var(--p-text);
+  font-family: var(--p-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.proto-root {
+  position: fixed;
+  inset: 0;
+  cursor: default;
+}
+
+.proto-root.is-hovering canvas {
+  cursor: pointer;
+}
+
+.proto-hud {
+  position: absolute;
+  pointer-events: none;
+  font-size: 12px;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px #000;
+}
+
+.proto-hud--stats {
+  top: 12px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  opacity: 0.75;
+}
+
+.proto-hud--help {
+  left: 14px;
+  bottom: 14px;
+  max-width: calc(100% - 28px);
+  padding: 10px 12px;
+  background: rgba(6, 6, 8, 0.55);
+  border: 1px solid rgba(127, 168, 201, 0.15);
+  opacity: 0.85;
+}
+
+.proto-title {
+  font-family: var(--p-display);
+  color: var(--p-bright);
+  letter-spacing: 0.12em;
+  margin-bottom: 4px;
+}
+
+.proto-dim {
+  color: var(--p-dim);
+}
+
+.proto-tag {
+  color: var(--p-warm);
+}
+
+.proto-fps--ok {
+  color: #9fc9a2;
+}
+.proto-fps--warn {
+  color: var(--p-warm);
+}
+.proto-fps--bad {
+  color: var(--p-danger);
+}
+
+kbd {
+  font-family: var(--p-body);
+  font-size: 11px;
+  padding: 0 4px;
+  border: 1px solid rgba(201, 205, 214, 0.3);
+  border-radius: 2px;
+  color: var(--p-bright);
+}
+
+.proto-label {
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  transform: translate(-50%, 4px);
+  pointer-events: none;
+  font-family: var(--p-display);
+  font-size: 18px;
+  letter-spacing: 0.32em;
+  color: var(--p-bright);
+  text-shadow: 0 0 12px rgba(127, 168, 201, 0.45), 0 1px 2px #000;
+  opacity: 0;
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+
+.proto-label.is-visible {
+  opacity: 0.92;
+  transform: translate(-50%, 0);
+}
+
+.proto-talk {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  transform: translateX(-50%);
+  min-width: min(420px, calc(100% - 32px));
+  padding: 14px 18px;
+  text-align: center;
+  pointer-events: none;
+  background: rgba(6, 6, 8, 0.78);
+  border-top: 1px solid rgba(216, 184, 116, 0.35);
+  border-bottom: 1px solid rgba(216, 184, 116, 0.35);
+  animation: protoTalkIn 320ms ease both;
+}
+
+.proto-talk__who {
+  font-family: var(--p-display);
+  letter-spacing: 0.2em;
+  color: var(--p-warm);
+}
+
+.proto-talk__line {
+  margin: 6px 0 2px;
+  color: var(--p-bright);
+  letter-spacing: 0.3em;
+}
+
+@keyframes protoTalkIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proto-talk,
+  .proto-label {
+    animation: none;
+    transition: none;
+  }
+}
