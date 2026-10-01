@@ -27,7 +27,7 @@
   height: 100%;
   z-index: 3;
   pointer-events: none;
-  transition: transform 60ms linear;
+  will-change: transform;
 }
 
 .platform-station-sign {
@@ -286,8 +286,18 @@
 
 /* Player */
 
+/* Full-width layer translated by (playerX - 50)% so walking is compositor-only. */
+.platform-player-track {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  will-change: transform;
+}
+
 .platform-player {
   position: absolute;
+  left: 50%;
   bottom: 22%;
   transform: translateX(-50%) scaleX(var(--facing, 1));
   z-index: 10;

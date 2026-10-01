@@ -26,7 +26,7 @@ A shippable, extensible browser horror game that grows toward full 3D, character
 | A | done | Visual polish of the DOM renderer, scene transitions, UI chrome, effects |
 | B1 | done | `runSeed` RNG, vanish pool, clue-subset gating, Tier 1/2 choices (guide §6) |
 | B2 | done | Station anomaly pools, flavor-text variants, ambient timing jitter (guide Systems 2-4) |
-| C | in progress | Done: shipping/infra (CI, Pages/Vercel/Netlify, PWA), Vitest invariant harness (70 tests). In progress: Three.js 2.5D prototype (carriage), art bible, story bible debate (round 2) |
+| C | paused | Done: shipping/infra (CI, Pages/Vercel/Netlify, PWA), Vitest invariant harness (70 tests), `docs/ART_BIBLE.md`, story debate (drafts in `docs/drafts/`), first jitter pass (platform movement, grain, fog). **Paused mid-flight on branch `wip/wave-c`:** the Three.js prototype (`prototype.html`, `src/render3d/`, `src/prototype/`; it typechecks, but scene integration and picking were unfinished) and the merged `docs/STORY_BIBLE.md` (partial). |
 | D | planned | Engine architecture pass: scene registry, content packs, save versioning/migrations, renderer abstraction |
 | E | planned | Roll the 3D renderer out to all scenes; DOM renderer becomes a fallback |
 | F | planned | Story depth from the story bible: backstories, lore, new content |
@@ -43,6 +43,12 @@ A shippable, extensible browser horror game that grows toward full 3D, character
 | Orchestrator | `docs/ROADMAP.md`, git, `package.json`, `tests/**`, `vitest.config.ts` |
 
 The game's own `src/` (engine, data, scenes, components, effects, audio) is frozen this wave. The next implementation wave will take it back once the story bible is synthesized.
+
+## Resume here (next session)
+
+1. Check out `wip/wave-c`. Finish the Three.js prototype: scene integration, raycast picking, then apply the 15 changes in `docs/ART_BIBLE.md` §11.4. Finish merging `docs/STORY_BIBLE.md` from the two drafts, using the orchestrator rulings recorded in the editor brief: STATUS word never shown; initials only on replay; 2:18 as both the breakLoop clock tick and the next-run platform clock; empty Empty-Platform doorway; Old Man "I used to be sure of that."; forgetting at 15% from night 3, never twice in a row; `minTripIfStaying`.
+2. Jitter pass 2: convert the remaining infinite `background-position`/`filter` animations to transform/opacity. These are `windowScroll` (TrainInterior.css), `sheenDrift` (Station.css), `railShimmer` (Platform.css) and `voidBreathe` (TrainInterior.css). Then profile each scene with the browser pane visible; rAF is paused while the pane is hidden.
+3. Wave D: extract scene logic into renderer-agnostic engine modules (per ART_BIBLE §11 precondition), then implement STORY_BIBLE P0.
 
 ## Known follow-ups
 

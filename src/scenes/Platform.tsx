@@ -76,7 +76,8 @@ function getDialogueForObject(id: string, priorCount: number): DialogueLine[] {
 }
 
 export default function Platform() {
-  const [playerX, setPlayerX] = useState(50);
+  const playerTrackRef = useRef<HTMLDivElement>(null);
+  const architectureRef = useRef<SVGSVGElement>(null);
   const [nearObjectId, setNearObjectId] = useState<string | null>(null);
   const [activeDialogue, setActiveDialogue] = useState<DialogueLine[] | null>(null);
   const [isMoving, setIsMoving] = useState(false);
@@ -161,8 +162,18 @@ export default function Platform() {
   // Movement + proximity loop.
   useEffect(() => {
     let last = performance.now();
+    // Movement writes transforms straight to the DOM: a React re-render of this
+    // whole scene every frame is what made walking stutter.
+    const applyPosition = () => {
+      const x = playerXRef.current;
+      if (playerTrackRef.current) playerTrackRef.current.style.transform = `translate3d(${x - 50}%, 0, 0)`;
+      if (architectureRef.current) architectureRef.current.style.transform = `translate3d(${(x - 50) * -0.06}%, 0, 0)`;
+    };
+    applyPosition();
+
     const loop = (now: number) => {
-      const dt = (now - last) / 1000;
+      // Clamp so a dropped frame or a backgrounded tab can't teleport the player.
+      const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
 
       if (!activeDialogueRef.current) {
@@ -171,7 +182,7 @@ export default function Platform() {
         if (keysRef.current['d'] || keysRef.current['D'] || keysRef.current['ArrowRight']) dx += 1;
         if (dx !== 0) {
           playerXRef.current = clamp(playerXRef.current + dx * PLAYER_SPEED * dt, PLAYER_MIN_X, PLAYER_MAX_X);
-          setPlayerX(playerXRef.current);
+          applyPosition();
           const nextFacing = dx > 0 ? 'right' : 'left';
           if (facingRef.current !== nextFacing) {
             facingRef.current = nextFacing;
@@ -235,11 +246,11 @@ export default function Platform() {
       <div className="platform-sky" />
 
       <svg
+        ref={architectureRef}
         className="platform-architecture"
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
         aria-hidden="true"
-        style={{ transform: `translateX(${(playerX - 50) * -0.06}%)` }}
       >
         <defs>
           <linearGradient id="platformCanopyGrad" x1="0" y1="0" x2="0" y2="1">
@@ -305,10 +316,10 @@ export default function Platform() {
       <div className="platform-tracks" />
       <div className="platform-rail-glint" />
 
+      <div className="platform-player-track" ref={playerTrackRef} aria-hidden>
       <div
         className={`platform-player${isMoving ? ' is-walking' : ''}`}
-        style={{ left: `${playerX}%`, '--facing': facing === 'left' ? -1 : 1 } as CSSProperties}
-        aria-hidden
+        style={{ '--facing': facing === 'left' ? -1 : 1 } as CSSProperties}
       >
         <svg className="platform-player-figure" viewBox="0 0 24 56">
           <defs>
@@ -327,6 +338,7 @@ export default function Platform() {
           <path d="M9,16 L15,16 L14.2,25 L9.8,25 Z" fill="rgba(127,168,201,0.08)" />
           <circle cx="12" cy="6" r="5" fill="#0b0b0d" stroke="#000" strokeWidth="0.6" />
         </svg>
+      </div>
       </div>
 
       {nearObject && !activeDialogue && (
